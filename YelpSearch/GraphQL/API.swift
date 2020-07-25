@@ -8,8 +8,8 @@ public final class BusinessSearchQuery: GraphQLQuery {
   /// The raw GraphQL definition of this operation.
   public let operationDefinition: String =
     """
-    query businessSearch {
-      search(term: "bagel", latitude: 45.4990267, longitude: -73.5562752, limit: 10, sort_by: "distance") {
+    query businessSearch($term: String, $latitude: Float, $longitude: Float, $limit: Int, $offset: Int, $sortBy: String) {
+      search(term: $term, latitude: $latitude, longitude: $longitude, limit: $limit, offset: $offset, sort_by: $sortBy) {
         __typename
         total
         business {
@@ -34,7 +34,24 @@ public final class BusinessSearchQuery: GraphQLQuery {
 
   public let operationName: String = "businessSearch"
 
-  public init() {
+  public var term: String?
+  public var latitude: Double?
+  public var longitude: Double?
+  public var limit: Int?
+  public var offset: Int?
+  public var sortBy: String?
+
+  public init(term: String? = nil, latitude: Double? = nil, longitude: Double? = nil, limit: Int? = nil, offset: Int? = nil, sortBy: String? = nil) {
+    self.term = term
+    self.latitude = latitude
+    self.longitude = longitude
+    self.limit = limit
+    self.offset = offset
+    self.sortBy = sortBy
+  }
+
+  public var variables: GraphQLMap? {
+    return ["term": term, "latitude": latitude, "longitude": longitude, "limit": limit, "offset": offset, "sortBy": sortBy]
   }
 
   public struct Data: GraphQLSelectionSet {
@@ -42,7 +59,7 @@ public final class BusinessSearchQuery: GraphQLQuery {
 
     public static var selections: [GraphQLSelection] {
       return [
-        GraphQLField("search", arguments: ["term": "bagel", "latitude": 45.4990267, "longitude": -73.5562752, "limit": 10, "sort_by": "distance"], type: .object(Search.selections)),
+        GraphQLField("search", arguments: ["term": GraphQLVariable("term"), "latitude": GraphQLVariable("latitude"), "longitude": GraphQLVariable("longitude"), "limit": GraphQLVariable("limit"), "offset": GraphQLVariable("offset"), "sort_by": GraphQLVariable("sortBy")], type: .object(Search.selections)),
       ]
     }
 

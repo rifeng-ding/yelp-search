@@ -7,17 +7,31 @@
 //
 
 import Foundation
+import MapKit
 import Combine
 
 typealias Business = BusinessSearchQuery.Data.Search.Business
 
+/// Defined based on https://www.yelp.com/developers/graphql/query/search
+enum BusinessSearchSorting: String {
+    case bestMatch = "best_match"
+    case distance
+    case rating
+    case review_count = "review_count"
+}
 
 protocol BusinessSearch {
     var pageSize: Int { get }
-    func fetchSearchResult(for searchTerm: String, pageNumber: Int) -> AnyPublisher<[Business], Error>
+    func fetchSearchResult(
+        for searchTerm: String,
+        coordinate: CLLocationCoordinate2D,
+        pageNumber: Int,
+        sorting: BusinessSearchSorting
+    ) -> AnyPublisher<[Business], Error>
 }
 
 class BusinessSearchService: BusinessSearch, Service {
+
     let pageSize: Int
     init(pageSize: Int) {
         self.pageSize = pageSize
@@ -25,10 +39,23 @@ class BusinessSearchService: BusinessSearch, Service {
 
     private(set) var searchCancellable: AnyCancellable?
 
-    func fetchSearchResult(for searchTerm: String, pageNumber: Int) -> AnyPublisher<[Business], Error> {
+    func fetchSearchResult(
+        for searchTerm: String,
+        coordinate: CLLocationCoordinate2D,
+        pageNumber: Int,
+        sorting: BusinessSearchSorting
+    ) -> AnyPublisher<[Business], Error> {
         let offset = pageNumber * pageSize
+        let query = BusinessSearchQuery(
+            term: searchTerm,
+            latitude: coordinate.latitude,
+            longitude: coordinate.longitude,
+            limit: pageSize,
+            offset: offset, sortBy:
+            sorting.rawValue
+        )
         return Future<[Business], Error> { [weak self] (promise) in
-            self?.searchCancellable = self?.fetch(query: BusinessSearchQuery()).sink(receiveCompletion: { [weak self] (completion) in
+            self?.searchCancellable = self?.fetch(query: query).sink(receiveCompletion: { [weak self] (completion) in
                 switch completion {
                 case .failure(let error):
                     promise(.failure(error))

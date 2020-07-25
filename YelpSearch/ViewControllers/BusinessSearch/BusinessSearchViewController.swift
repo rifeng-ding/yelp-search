@@ -18,9 +18,13 @@ class BusinessSearchViewController: UIViewController {
     let viewModel = BusinessSearchViewModel(service: BusinessSearchService(pageSize: 10))
 
     private var searchResultCancellable: AnyCancellable?
+    private let searchController = UISearchController(searchResultsController: nil)
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = viewModel.title
+        configureSearchController()
         configureCollectionView()
         searchResultCancellable = viewModel.searchResults.sink(receiveCompletion: { [weak self] (completion) in
             switch completion {
@@ -36,7 +40,7 @@ class BusinessSearchViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        viewModel.loadSearchResults()
+//        viewModel.search(for: "bagel")
     }
 
     private func configureCollectionView() {
@@ -44,6 +48,15 @@ class BusinessSearchViewController: UIViewController {
         let flowLayout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
         flowLayout.minimumLineSpacing = gridSpacing
         flowLayout.minimumInteritemSpacing = gridSpacing
+    }
+
+    private func configureSearchController() {
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search on Yelp"
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
+        definesPresentationContext = true
     }
 }
 
@@ -70,4 +83,14 @@ extension BusinessSearchViewController: UICollectionViewDataSource {
 
 extension BusinessSearchViewController: UICollectionViewDelegate {
 
+}
+
+extension BusinessSearchViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        if let searchTerm = searchController.searchBar.text, searchTerm.count > 0 {
+            viewModel.search(for: searchTerm)
+        } else {
+            viewModel.clearSearchResult()
+        }
+    }
 }

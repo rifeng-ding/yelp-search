@@ -25,6 +25,8 @@ class BusinessSearchViewModel {
     private var searchCancellable: AnyCancellable?
     private let distanceFormatter = MKDistanceFormatter()
 
+    let title = "Yelp Search"
+
     var numberOfCells: Int {
         return _businesses.count
     }
@@ -33,17 +35,28 @@ class BusinessSearchViewModel {
         self.service = service
     }
 
-    func loadSearchResults() {
-        searchCancellable = service.fetchSearchResult(for: "s", pageNumber: pageNumber).sink(receiveCompletion: { [weak self] (completion) in
+    func search(for searchTerm: String) {
+        searchCancellable?.cancel()
+        searchCancellable = service.fetchSearchResult(
+            for: searchTerm,
+            coordinate: mockCoordinate,
+            pageNumber: pageNumber,
+            sorting: .distance
+        ).sink(receiveCompletion: { [weak self] (completion) in
             switch completion {
             case .failure(let error):
                 self?.searchResults.send(completion: .failure(error))
             case .finished:
                 self?.searchCancellable = nil
             }
-        }, receiveValue: { [weak self] (businesses) in
-            self?._businesses.append(contentsOf: businesses)
+            }, receiveValue: { [weak self] (businesses) in
+                self?._businesses.append(contentsOf: businesses)
         })
+    }
+
+    func clearSearchResult() {
+        cancelCurrentSearch()
+        _businesses = [Business]()
     }
 
     func cancelCurrentSearch() {
