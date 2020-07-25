@@ -9,15 +9,17 @@
 import UIKit
 import Combine
 
+private let gridSpacing = Spacing.s3
+private let paginationCellIndexOffset = 4
+private let pageSize = 20
+
 class BusinessSearchViewController: UIViewController {
-
-    private let gridSpacing = Spacing.s3
-
     @IBOutlet weak var collectionView: UICollectionView!
 
-    let viewModel = BusinessSearchViewModel(service: BusinessSearchService(pageSize: 10))
+    let viewModel = BusinessSearchViewModel(service: BusinessSearchService(pageSize: 20))
 
     private var searchResultCancellable: AnyCancellable?
+    private var searchErrorCancellable: AnyCancellable?
     private let searchController = UISearchController(searchResultsController: nil)
 
 
@@ -26,15 +28,20 @@ class BusinessSearchViewController: UIViewController {
         title = viewModel.title
         configureSearchController()
         configureCollectionView()
-        searchResultCancellable = viewModel.searchResults.sink(receiveCompletion: { [weak self] (completion) in
-            switch completion {
-            case .failure(let error):
-                self?.handle(error)
-            case .finished:
-                break
+        searchResultCancellable = viewModel.searchResultUpdate.sink { [weak self] (newResultRange) in
+            if newResultRange.startIndex == 0 {
+                self?.collectionView.reloadData()
+            } else {
+                var newIndexPathes = [IndexPath]()
+                for i in newResultRange {
+                    newIndexPathes.append(IndexPath(item: i, section: 0))
+                }
+                self?.collectionView.insertItems(at: newIndexPathes)
             }
-        }) { [weak self] (_) in
-            self?.collectionView.reloadData()
+        }
+
+        searchErrorCancellable = viewModel.errorUpdate.sink { [weak self] (error) in
+            self?.handle(error)
         }
     }
 
@@ -82,7 +89,12 @@ extension BusinessSearchViewController: UICollectionViewDataSource {
 }
 
 extension BusinessSearchViewController: UICollectionViewDelegate {
-
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if viewModel.numberOfCells - indexPath.item == paginationCellIndexOffset {
+            print("loading page: reached cell")
+            viewModel.loadMoreResultsForCurrentSearchTerm()
+        }
+    }
 }
 
 extension BusinessSearchViewController: UISearchResultsUpdating {
