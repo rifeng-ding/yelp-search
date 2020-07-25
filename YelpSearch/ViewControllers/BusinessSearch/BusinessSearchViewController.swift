@@ -63,6 +63,7 @@ extension BusinessSearchViewController: UICollectionViewDataSource {
         cell.nameLabel.text = viewModel.name(for: indexPath)
         cell.infoLabel.text = viewModel.info(for: indexPath)
         cell.distanceLabel.text = viewModel.distiance(for: indexPath)
+        cell.imageView.loadImage(fromURL: viewModel.imageURL(for: indexPath))
         return cell
     }
 }

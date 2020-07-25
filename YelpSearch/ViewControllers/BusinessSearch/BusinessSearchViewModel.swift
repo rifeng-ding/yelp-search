@@ -56,9 +56,20 @@ class BusinessSearchViewModel {
 
     func info(for indexPath: IndexPath) -> String {
         let business = _businesses[indexPath.item]
-        let rating = String(format: "%.1f", business.rating ?? 0)
-        let numberOfRating = "\(business.reviewCount ?? 0)  Reviews"
-        return "\(rating) Star(s)/ \(numberOfRating)"
+        var ratingCopy = "Not enough ratings"
+
+        if let rating = business.rating {
+            ratingCopy = String(format: "%.1f/5 stars", rating)
+        } else {
+            // when there's no rating, there's probably no price range
+            return ratingCopy
+        }
+
+        var parts = [ratingCopy]
+        if let priceRange = business.price  {
+            parts.append(priceRange)
+        }
+        return parts.joined(separator: ", ")
     }
 
     func distiance(for indexPath: IndexPath) -> String? {
@@ -67,6 +78,14 @@ class BusinessSearchViewModel {
             return nil
         }
         return distanceFormatter.string(fromDistance: distance)
+    }
+
+    func imageURL(for indexPath: IndexPath) -> String? {
+        let business = _businesses[indexPath.item]
+        guard let photoURL = business.photos?.first else {
+            return nil
+        }
+        return photoURL
     }
 }
 

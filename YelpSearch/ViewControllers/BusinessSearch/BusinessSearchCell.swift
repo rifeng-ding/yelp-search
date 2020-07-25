@@ -15,23 +15,30 @@ class BusinessSearchCell: UICollectionViewCell {
     @IBOutlet private(set) weak var infoLabel: UILabel!
     @IBOutlet private(set) weak var distanceLabel: UILabel!
 
-    private var cellWidthConstraint: NSLayoutConstraint!
+    private var widthConstraint: NSLayoutConstraint!
+    private var imageViewHeightConstraint: NSLayoutConstraint!
 
     var width: CGFloat {
         set {
-            cellWidthConstraint.constant = newValue
+            widthConstraint.constant = newValue
+            imageViewHeightConstraint.constant = newValue
         }
 
         get {
-            cellWidthConstraint.constant
+            widthConstraint.constant
         }
     }
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        cellWidthConstraint = contentView.widthAnchor.constraint(equalToConstant: 320)
-        cellWidthConstraint.isActive = true
-        
+        widthConstraint = contentView.widthAnchor.constraint(equalToConstant: 320)
+        widthConstraint.isActive = true
+        imageViewHeightConstraint = imageView.heightAnchor.constraint(equalToConstant: 320)
+        imageViewHeightConstraint.isActive = true
+
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+
         contentView.backgroundColor = .systemBackground
         contentView.layer.cornerRadius = CornerRadius.standard
         contentView.layer.masksToBounds = true
