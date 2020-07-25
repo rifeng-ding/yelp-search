@@ -7,9 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B40FD7F924CC89DC00A76F92 /* BusinessSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40FD7F824CC89DC00A76F92 /* BusinessSearchService.swift */; };
+		B40FD7FB24CC8D4100A76F92 /* Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40FD7FA24CC8D4100A76F92 /* Service.swift */; };
+		B40FD7FD24CC932900A76F92 /* BusinessSearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40FD7FC24CC932900A76F92 /* BusinessSearchViewModel.swift */; };
+		B40FD80024CCA73A00A76F92 /* ErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40FD7FF24CCA73A00A76F92 /* ErrorHandler.swift */; };
+		B40FD80224CCA7F600A76F92 /* BusinessSearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40FD80124CCA7F600A76F92 /* BusinessSearchCell.swift */; };
+		B40FD80524CCA84400A76F92 /* StyleConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40FD80424CCA84400A76F92 /* StyleConstants.swift */; };
+		B40FD80724CCADBF00A76F92 /* ReuseIdentifiable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40FD80624CCADBF00A76F92 /* ReuseIdentifiable.swift */; };
 		B4D2897924CC85C40065EF4A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D2897824CC85C40065EF4A /* AppDelegate.swift */; };
 		B4D2897B24CC85C40065EF4A /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D2897A24CC85C40065EF4A /* SceneDelegate.swift */; };
-		B4D2897D24CC85C40065EF4A /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D2897C24CC85C40065EF4A /* ViewController.swift */; };
+		B4D2897D24CC85C40065EF4A /* BusinessSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D2897C24CC85C40065EF4A /* BusinessSearchViewController.swift */; };
 		B4D2898024CC85C40065EF4A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B4D2897E24CC85C40065EF4A /* Main.storyboard */; };
 		B4D2898224CC85C50065EF4A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B4D2898124CC85C50065EF4A /* Assets.xcassets */; };
 		B4D2898524CC85C50065EF4A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B4D2898324CC85C50065EF4A /* LaunchScreen.storyboard */; };
@@ -35,10 +42,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B40FD7F824CC89DC00A76F92 /* BusinessSearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusinessSearchService.swift; sourceTree = "<group>"; };
+		B40FD7FA24CC8D4100A76F92 /* Service.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Service.swift; sourceTree = "<group>"; };
+		B40FD7FC24CC932900A76F92 /* BusinessSearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusinessSearchViewModel.swift; sourceTree = "<group>"; };
+		B40FD7FF24CCA73A00A76F92 /* ErrorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorHandler.swift; sourceTree = "<group>"; };
+		B40FD80124CCA7F600A76F92 /* BusinessSearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusinessSearchCell.swift; sourceTree = "<group>"; };
+		B40FD80424CCA84400A76F92 /* StyleConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleConstants.swift; sourceTree = "<group>"; };
+		B40FD80624CCADBF00A76F92 /* ReuseIdentifiable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReuseIdentifiable.swift; sourceTree = "<group>"; };
 		B4D2897524CC85C40065EF4A /* YelpSearch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YelpSearch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B4D2897824CC85C40065EF4A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B4D2897A24CC85C40065EF4A /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		B4D2897C24CC85C40065EF4A /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		B4D2897C24CC85C40065EF4A /* BusinessSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusinessSearchViewController.swift; sourceTree = "<group>"; };
 		B4D2897F24CC85C40065EF4A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		B4D2898124CC85C50065EF4A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B4D2898424CC85C50065EF4A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -74,6 +88,32 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B40FD7F724CC89CC00A76F92 /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				B40FD7FA24CC8D4100A76F92 /* Service.swift */,
+				B40FD7F824CC89DC00A76F92 /* BusinessSearchService.swift */,
+			);
+			path = Service;
+			sourceTree = "<group>";
+		};
+		B40FD7FE24CCA72600A76F92 /* Protocol */ = {
+			isa = PBXGroup;
+			children = (
+				B40FD7FF24CCA73A00A76F92 /* ErrorHandler.swift */,
+				B40FD80624CCADBF00A76F92 /* ReuseIdentifiable.swift */,
+			);
+			path = Protocol;
+			sourceTree = "<group>";
+		};
+		B40FD80324CCA83700A76F92 /* Style */ = {
+			isa = PBXGroup;
+			children = (
+				B40FD80424CCA84400A76F92 /* StyleConstants.swift */,
+			);
+			path = Style;
+			sourceTree = "<group>";
+		};
 		B4D2896C24CC85C40065EF4A = {
 			isa = PBXGroup;
 			children = (
@@ -95,14 +135,17 @@
 		B4D2897724CC85C40065EF4A /* YelpSearch */ = {
 			isa = PBXGroup;
 			children = (
-				B4D289A324CC85F10065EF4A /* GraphQL */,
 				B4D2897824CC85C40065EF4A /* AppDelegate.swift */,
 				B4D2897A24CC85C40065EF4A /* SceneDelegate.swift */,
-				B4D2897C24CC85C40065EF4A /* ViewController.swift */,
 				B4D2897E24CC85C40065EF4A /* Main.storyboard */,
 				B4D2898124CC85C50065EF4A /* Assets.xcassets */,
 				B4D2898324CC85C50065EF4A /* LaunchScreen.storyboard */,
 				B4D2898624CC85C50065EF4A /* Info.plist */,
+				B40FD80324CCA83700A76F92 /* Style */,
+				B40FD7FE24CCA72600A76F92 /* Protocol */,
+				B40FD7F724CC89CC00A76F92 /* Service */,
+				B4D289AD24CC87810065EF4A /* ViewControllers */,
+				B4D289A324CC85F10065EF4A /* GraphQL */,
 			);
 			path = YelpSearch;
 			sourceTree = "<group>";
@@ -125,6 +168,24 @@
 				B4D289AB24CC869F0065EF4A /* Network.swift */,
 			);
 			path = GraphQL;
+			sourceTree = "<group>";
+		};
+		B4D289AD24CC87810065EF4A /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				B4D289AE24CC87C20065EF4A /* BusinessSearch */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		B4D289AE24CC87C20065EF4A /* BusinessSearch */ = {
+			isa = PBXGroup;
+			children = (
+				B40FD80124CCA7F600A76F92 /* BusinessSearchCell.swift */,
+				B40FD7FC24CC932900A76F92 /* BusinessSearchViewModel.swift */,
+				B4D2897C24CC85C40065EF4A /* BusinessSearchViewController.swift */,
+			);
+			path = BusinessSearch;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -262,10 +323,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				B4D289AC24CC869F0065EF4A /* Network.swift in Sources */,
-				B4D2897D24CC85C40065EF4A /* ViewController.swift in Sources */,
+				B40FD80224CCA7F600A76F92 /* BusinessSearchCell.swift in Sources */,
+				B4D2897D24CC85C40065EF4A /* BusinessSearchViewController.swift in Sources */,
 				B4D2897924CC85C40065EF4A /* AppDelegate.swift in Sources */,
 				B4D289AA24CC86830065EF4A /* API.swift in Sources */,
+				B40FD7FB24CC8D4100A76F92 /* Service.swift in Sources */,
 				B4D2897B24CC85C40065EF4A /* SceneDelegate.swift in Sources */,
+				B40FD80024CCA73A00A76F92 /* ErrorHandler.swift in Sources */,
+				B40FD80524CCA84400A76F92 /* StyleConstants.swift in Sources */,
+				B40FD7FD24CC932900A76F92 /* BusinessSearchViewModel.swift in Sources */,
+				B40FD80724CCADBF00A76F92 /* ReuseIdentifiable.swift in Sources */,
+				B40FD7F924CC89DC00A76F92 /* BusinessSearchService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
