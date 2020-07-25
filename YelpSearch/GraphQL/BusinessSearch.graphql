@@ -1,0 +1,19 @@
+query businessSearch {
+  search(term: "bagel", latitude: 45.4990267, longitude: -73.5562752, limit: 10, sort_by: "distance") {
+    total
+    business {
+      name
+      id
+      url
+      display_phone
+      review_count
+      rating
+      price
+      photos
+      coordinates {
+        latitude
+        longitude
+      }
+    }
+  }
+}
