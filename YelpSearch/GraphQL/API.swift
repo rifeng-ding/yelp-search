@@ -22,6 +22,10 @@ public final class BusinessSearchQuery: GraphQLQuery {
           rating
           price
           photos
+          location {
+            __typename
+            formatted_address
+          }
           coordinates {
             __typename
             latitude
@@ -147,6 +151,7 @@ public final class BusinessSearchQuery: GraphQLQuery {
             GraphQLField("rating", type: .scalar(Double.self)),
             GraphQLField("price", type: .scalar(String.self)),
             GraphQLField("photos", type: .list(.scalar(String.self))),
+            GraphQLField("location", type: .object(Location.selections)),
             GraphQLField("coordinates", type: .object(Coordinate.selections)),
           ]
         }
@@ -157,8 +162,8 @@ public final class BusinessSearchQuery: GraphQLQuery {
           self.resultMap = unsafeResultMap
         }
 
-        public init(name: String? = nil, id: String? = nil, url: String? = nil, displayPhone: String? = nil, reviewCount: Int? = nil, rating: Double? = nil, price: String? = nil, photos: [String?]? = nil, coordinates: Coordinate? = nil) {
-          self.init(unsafeResultMap: ["__typename": "Business", "name": name, "id": id, "url": url, "display_phone": displayPhone, "review_count": reviewCount, "rating": rating, "price": price, "photos": photos, "coordinates": coordinates.flatMap { (value: Coordinate) -> ResultMap in value.resultMap }])
+        public init(name: String? = nil, id: String? = nil, url: String? = nil, displayPhone: String? = nil, reviewCount: Int? = nil, rating: Double? = nil, price: String? = nil, photos: [String?]? = nil, location: Location? = nil, coordinates: Coordinate? = nil) {
+          self.init(unsafeResultMap: ["__typename": "Business", "name": name, "id": id, "url": url, "display_phone": displayPhone, "review_count": reviewCount, "rating": rating, "price": price, "photos": photos, "location": location.flatMap { (value: Location) -> ResultMap in value.resultMap }, "coordinates": coordinates.flatMap { (value: Coordinate) -> ResultMap in value.resultMap }])
         }
 
         public var __typename: String {
@@ -250,6 +255,16 @@ public final class BusinessSearchQuery: GraphQLQuery {
           }
         }
 
+        /// The location of this business, including address, city, state, postal code and country.
+        public var location: Location? {
+          get {
+            return (resultMap["location"] as? ResultMap).flatMap { Location(unsafeResultMap: $0) }
+          }
+          set {
+            resultMap.updateValue(newValue?.resultMap, forKey: "location")
+          }
+        }
+
         /// The coordinates of this business.
         public var coordinates: Coordinate? {
           get {
@@ -257,6 +272,46 @@ public final class BusinessSearchQuery: GraphQLQuery {
           }
           set {
             resultMap.updateValue(newValue?.resultMap, forKey: "coordinates")
+          }
+        }
+
+        public struct Location: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["Location"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("formatted_address", type: .scalar(String.self)),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public init(formattedAddress: String? = nil) {
+            self.init(unsafeResultMap: ["__typename": "Location", "formatted_address": formattedAddress])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          /// Array of strings that if organized vertically give an address that is in the standard address format for the business's country.
+          public var formattedAddress: String? {
+            get {
+              return resultMap["formatted_address"] as? String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "formatted_address")
+            }
           }
         }
 
@@ -307,6 +362,235 @@ public final class BusinessSearchQuery: GraphQLQuery {
             }
             set {
               resultMap.updateValue(newValue, forKey: "longitude")
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+public final class ReviewSnippetsQuery: GraphQLQuery {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition: String =
+    """
+    query reviewSnippets($businessId: String) {
+      reviews(business: $businessId) {
+        __typename
+        total
+        review {
+          __typename
+          time_created
+          text
+          rating
+          user {
+            __typename
+            name
+          }
+        }
+      }
+    }
+    """
+
+  public let operationName: String = "reviewSnippets"
+
+  public var businessId: String?
+
+  public init(businessId: String? = nil) {
+    self.businessId = businessId
+  }
+
+  public var variables: GraphQLMap? {
+    return ["businessId": businessId]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["Query"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("reviews", arguments: ["business": GraphQLVariable("businessId")], type: .object(Review.selections)),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(reviews: Review? = nil) {
+      self.init(unsafeResultMap: ["__typename": "Query", "reviews": reviews.flatMap { (value: Review) -> ResultMap in value.resultMap }])
+    }
+
+    /// Load reviews for a specific business.
+    public var reviews: Review? {
+      get {
+        return (resultMap["reviews"] as? ResultMap).flatMap { Review(unsafeResultMap: $0) }
+      }
+      set {
+        resultMap.updateValue(newValue?.resultMap, forKey: "reviews")
+      }
+    }
+
+    public struct Review: GraphQLSelectionSet {
+      public static let possibleTypes: [String] = ["Reviews"]
+
+      public static var selections: [GraphQLSelection] {
+        return [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("total", type: .scalar(Int.self)),
+          GraphQLField("review", type: .list(.object(Review.selections))),
+        ]
+      }
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(total: Int? = nil, review: [Review?]? = nil) {
+        self.init(unsafeResultMap: ["__typename": "Reviews", "total": total, "review": review.flatMap { (value: [Review?]) -> [ResultMap?] in value.map { (value: Review?) -> ResultMap? in value.flatMap { (value: Review) -> ResultMap in value.resultMap } } }])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      /// Total number of reviews.
+      public var total: Int? {
+        get {
+          return resultMap["total"] as? Int
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "total")
+        }
+      }
+
+      /// The reviews objects.
+      public var review: [Review?]? {
+        get {
+          return (resultMap["review"] as? [ResultMap?]).flatMap { (value: [ResultMap?]) -> [Review?] in value.map { (value: ResultMap?) -> Review? in value.flatMap { (value: ResultMap) -> Review in Review(unsafeResultMap: value) } } }
+        }
+        set {
+          resultMap.updateValue(newValue.flatMap { (value: [Review?]) -> [ResultMap?] in value.map { (value: Review?) -> ResultMap? in value.flatMap { (value: Review) -> ResultMap in value.resultMap } } }, forKey: "review")
+        }
+      }
+
+      public struct Review: GraphQLSelectionSet {
+        public static let possibleTypes: [String] = ["Review"]
+
+        public static var selections: [GraphQLSelection] {
+          return [
+            GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+            GraphQLField("time_created", type: .scalar(String.self)),
+            GraphQLField("text", type: .scalar(String.self)),
+            GraphQLField("rating", type: .scalar(Int.self)),
+            GraphQLField("user", type: .object(User.selections)),
+          ]
+        }
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(timeCreated: String? = nil, text: String? = nil, rating: Int? = nil, user: User? = nil) {
+          self.init(unsafeResultMap: ["__typename": "Review", "time_created": timeCreated, "text": text, "rating": rating, "user": user.flatMap { (value: User) -> ResultMap in value.resultMap }])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        /// The time that the review was created in PST.
+        public var timeCreated: String? {
+          get {
+            return resultMap["time_created"] as? String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "time_created")
+          }
+        }
+
+        /// Text excerpt of this review.
+        public var text: String? {
+          get {
+            return resultMap["text"] as? String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "text")
+          }
+        }
+
+        /// Rating of this review.
+        public var rating: Int? {
+          get {
+            return resultMap["rating"] as? Int
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "rating")
+          }
+        }
+
+        /// The user who wrote the review.
+        public var user: User? {
+          get {
+            return (resultMap["user"] as? ResultMap).flatMap { User(unsafeResultMap: $0) }
+          }
+          set {
+            resultMap.updateValue(newValue?.resultMap, forKey: "user")
+          }
+        }
+
+        public struct User: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["User"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("name", type: .scalar(String.self)),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public init(name: String? = nil) {
+            self.init(unsafeResultMap: ["__typename": "User", "name": name])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          /// Name of the user.
+          public var name: String? {
+            get {
+              return resultMap["name"] as? String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "name")
             }
           }
         }

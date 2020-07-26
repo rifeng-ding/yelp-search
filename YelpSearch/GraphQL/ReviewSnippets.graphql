@@ -1,0 +1,13 @@
+query reviewSnippets($businessId: String) {
+  reviews(business: $businessId) {
+    total
+    review {
+      time_created
+      text
+      rating
+      user {
+        name
+      }
+    }
+  }
+}
