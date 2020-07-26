@@ -14,8 +14,13 @@ protocol ErrorHandler {
 
 extension UIViewController: ErrorHandler {
     func handle(_ error: Error) {
+
+        var errorMessage = error.localizedDescription
+        if let graphQLError = error as? GraphQLQuerryError {
+            errorMessage = graphQLError.message
+        }
         let alert = UIAlertController(title: title,
-                                      message: error.localizedDescription,
+                                      message: errorMessage,
                                       preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         self.present(alert, animated: true)

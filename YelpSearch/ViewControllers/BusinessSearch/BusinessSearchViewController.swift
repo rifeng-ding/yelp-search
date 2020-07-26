@@ -10,11 +10,12 @@ import UIKit
 import Combine
 
 private let gridSpacing = Spacing.s3
-private let paginationCellIndexOffset = 4
+private let paginationCellIndexOffset = 6
 private let pageSize = 20
 
 class BusinessSearchViewController: UIViewController {
-    @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet private weak var collectionView: UICollectionView!
+    @IBOutlet private weak var emptyStateLabel: UILabel!
 
     let viewModel = BusinessSearchViewModel(service: BusinessSearchService(pageSize: 20))
 
@@ -22,10 +23,10 @@ class BusinessSearchViewController: UIViewController {
     private var searchErrorCancellable: AnyCancellable?
     private let searchController = UISearchController(searchResultsController: nil)
 
-
     override func viewDidLoad() {
         super.viewDidLoad()
         title = viewModel.title
+        updateEmptyStateLabel()
         configureSearchController()
         configureCollectionView()
         subscribeToViewModel()
@@ -49,19 +50,27 @@ class BusinessSearchViewController: UIViewController {
 
     private func subscribeToViewModel() {
         searchResultCancellable = viewModel.searchResultUpdate.sink { [weak self] (newResultRange) in
+            guard let self = self else {
+                return
+            }
+            guard let newResultRange = newResultRange else {
+                self.collectionView.reloadData()
+                return
+            }
             if newResultRange.startIndex == 0 {
-                self?.collectionView.reloadData()
+                self.collectionView.reloadData()
             } else {
                 var newIndexPathes = [IndexPath]()
                 for i in newResultRange {
                     newIndexPathes.append(IndexPath(item: i, section: 0))
                 }
                 UIView.performWithoutAnimation {
-                    self?.collectionView.performBatchUpdates({
-                        self?.collectionView.insertItems(at: newIndexPathes)
+                    self.collectionView.performBatchUpdates({
+                        self.collectionView.insertItems(at: newIndexPathes)
                     }, completion: nil)
                 }
             }
+            self.updateEmptyStateLabel()
         }
 
         searchErrorCancellable = viewModel.errorUpdate.sink { [weak self] (error) in
@@ -86,15 +95,22 @@ extension BusinessSearchViewController: UICollectionViewDataSource {
         cell.nameLabel.text = viewModel.name(for: indexPath)
         cell.infoLabel.text = viewModel.info(for: indexPath)
         cell.distanceLabel.text = viewModel.distiance(for: indexPath)
-        cell.imageView.loadImage(fromURL: viewModel.imageURL(for: indexPath))
+        cell.imageView.loadImage(
+            fromURL: viewModel.imageURL(for: indexPath),
+            defaultImage: viewModel.defaultImage
+        )
         return cell
     }
 }
 
 extension BusinessSearchViewController: UICollectionViewDelegate {
+    
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard viewModel.numberOfCells >= pageSize else {
+            return
+        }
         if viewModel.numberOfCells - indexPath.item == paginationCellIndexOffset {
-            print("loading page: reached cell")
+            print("loading page: reached cell \(indexPath.item)/\(viewModel.numberOfCells)")
             viewModel.loadMoreResultsForCurrentSearchTerm()
         }
     }
@@ -107,14 +123,21 @@ extension BusinessSearchViewController: UICollectionViewDelegate {
         let detailViewController = BusinessDetailViewController(viewModel: detailViewModel)
         navigationController?.pushViewController(detailViewController, animated: true)
     }
+
+    func updateEmptyStateLabel() {
+        emptyStateLabel.text = viewModel.emptyStateMessage
+        emptyStateLabel.isHidden = !viewModel.shouldShowEmptyState
+    }
 }
 
 extension BusinessSearchViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         if let searchTerm = searchController.searchBar.text, searchTerm.count > 0 {
             viewModel.search(for: searchTerm)
+            emptyStateLabel.isHidden = true
         } else {
             viewModel.clearSearchResult()
+            updateEmptyStateLabel()
         }
     }
 }
