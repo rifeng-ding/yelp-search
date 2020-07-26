@@ -14,6 +14,9 @@
 		B40FD80224CCA7F600A76F92 /* BusinessSearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40FD80124CCA7F600A76F92 /* BusinessSearchCell.swift */; };
 		B40FD80524CCA84400A76F92 /* StyleConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40FD80424CCA84400A76F92 /* StyleConstants.swift */; };
 		B40FD80724CCADBF00A76F92 /* ReuseIdentifiable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40FD80624CCADBF00A76F92 /* ReuseIdentifiable.swift */; };
+		B40FD80A24CCBBCC00A76F92 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = B40FD80924CCBBCC00A76F92 /* SDWebImage */; };
+		B40FD80D24CCBC6400A76F92 /* UIImageView+SDWebImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40FD80C24CCBC6400A76F92 /* UIImageView+SDWebImage.swift */; };
+		B40FD80F24CCC53000A76F92 /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40FD80E24CCC53000A76F92 /* API.swift */; };
 		B4D2897924CC85C40065EF4A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D2897824CC85C40065EF4A /* AppDelegate.swift */; };
 		B4D2897B24CC85C40065EF4A /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D2897A24CC85C40065EF4A /* SceneDelegate.swift */; };
 		B4D2897D24CC85C40065EF4A /* BusinessSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D2897C24CC85C40065EF4A /* BusinessSearchViewController.swift */; };
@@ -27,7 +30,6 @@
 		B4D289A224CC85E70065EF4A /* ApolloCore in Frameworks */ = {isa = PBXBuildFile; productRef = B4D289A124CC85E70065EF4A /* ApolloCore */; };
 		B4D289A624CC86430065EF4A /* schema.json in Resources */ = {isa = PBXBuildFile; fileRef = B4D289A524CC86430065EF4A /* schema.json */; };
 		B4D289A824CC865A0065EF4A /* BusinessSearch.graphql in Resources */ = {isa = PBXBuildFile; fileRef = B4D289A724CC865A0065EF4A /* BusinessSearch.graphql */; };
-		B4D289AA24CC86830065EF4A /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D289A924CC86830065EF4A /* API.swift */; };
 		B4D289AC24CC869F0065EF4A /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D289AB24CC869F0065EF4A /* Network.swift */; };
 /* End PBXBuildFile section */
 
@@ -49,6 +51,8 @@
 		B40FD80124CCA7F600A76F92 /* BusinessSearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusinessSearchCell.swift; sourceTree = "<group>"; };
 		B40FD80424CCA84400A76F92 /* StyleConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleConstants.swift; sourceTree = "<group>"; };
 		B40FD80624CCADBF00A76F92 /* ReuseIdentifiable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReuseIdentifiable.swift; sourceTree = "<group>"; };
+		B40FD80C24CCBC6400A76F92 /* UIImageView+SDWebImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImageView+SDWebImage.swift"; sourceTree = "<group>"; };
+		B40FD80E24CCC53000A76F92 /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
 		B4D2897524CC85C40065EF4A /* YelpSearch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YelpSearch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B4D2897824CC85C40065EF4A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B4D2897A24CC85C40065EF4A /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -62,7 +66,6 @@
 		B4D2899124CC85C50065EF4A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B4D289A524CC86430065EF4A /* schema.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = schema.json; sourceTree = "<group>"; };
 		B4D289A724CC865A0065EF4A /* BusinessSearch.graphql */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BusinessSearch.graphql; sourceTree = "<group>"; };
-		B4D289A924CC86830065EF4A /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = API.swift; path = ../../../../../Desktop/YelpSearch/YelpSearch/GraphQL/API.swift; sourceTree = "<group>"; };
 		B4D289AB24CC869F0065EF4A /* Network.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -75,6 +78,7 @@
 				B4D289A024CC85E70065EF4A /* Apollo in Frameworks */,
 				B4D289A224CC85E70065EF4A /* ApolloCore in Frameworks */,
 				B4D2899E24CC85E70065EF4A /* ApolloWebSocket in Frameworks */,
+				B40FD80A24CCBBCC00A76F92 /* SDWebImage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,6 +118,14 @@
 			path = Style;
 			sourceTree = "<group>";
 		};
+		B40FD80B24CCBC5300A76F92 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				B40FD80C24CCBC6400A76F92 /* UIImageView+SDWebImage.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		B4D2896C24CC85C40065EF4A = {
 			isa = PBXGroup;
 			children = (
@@ -141,6 +153,7 @@
 				B4D2898124CC85C50065EF4A /* Assets.xcassets */,
 				B4D2898324CC85C50065EF4A /* LaunchScreen.storyboard */,
 				B4D2898624CC85C50065EF4A /* Info.plist */,
+				B40FD80B24CCBC5300A76F92 /* Extensions */,
 				B40FD80324CCA83700A76F92 /* Style */,
 				B40FD7FE24CCA72600A76F92 /* Protocol */,
 				B40FD7F724CC89CC00A76F92 /* Service */,
@@ -164,7 +177,7 @@
 			children = (
 				B4D289A524CC86430065EF4A /* schema.json */,
 				B4D289A724CC865A0065EF4A /* BusinessSearch.graphql */,
-				B4D289A924CC86830065EF4A /* API.swift */,
+				B40FD80E24CCC53000A76F92 /* API.swift */,
 				B4D289AB24CC869F0065EF4A /* Network.swift */,
 			);
 			path = GraphQL;
@@ -210,6 +223,7 @@
 				B4D2899D24CC85E70065EF4A /* ApolloWebSocket */,
 				B4D2899F24CC85E70065EF4A /* Apollo */,
 				B4D289A124CC85E70065EF4A /* ApolloCore */,
+				B40FD80924CCBBCC00A76F92 /* SDWebImage */,
 			);
 			productName = YelpSearch;
 			productReference = B4D2897524CC85C40065EF4A /* YelpSearch.app */;
@@ -263,6 +277,7 @@
 			mainGroup = B4D2896C24CC85C40065EF4A;
 			packageReferences = (
 				B4D2899A24CC85E70065EF4A /* XCRemoteSwiftPackageReference "apollo-ios" */,
+				B40FD80824CCBBCC00A76F92 /* XCRemoteSwiftPackageReference "SDWebImage" */,
 			);
 			productRefGroup = B4D2897624CC85C40065EF4A /* Products */;
 			projectDirPath = "";
@@ -326,10 +341,11 @@
 				B40FD80224CCA7F600A76F92 /* BusinessSearchCell.swift in Sources */,
 				B4D2897D24CC85C40065EF4A /* BusinessSearchViewController.swift in Sources */,
 				B4D2897924CC85C40065EF4A /* AppDelegate.swift in Sources */,
-				B4D289AA24CC86830065EF4A /* API.swift in Sources */,
 				B40FD7FB24CC8D4100A76F92 /* Service.swift in Sources */,
+				B40FD80D24CCBC6400A76F92 /* UIImageView+SDWebImage.swift in Sources */,
 				B4D2897B24CC85C40065EF4A /* SceneDelegate.swift in Sources */,
 				B40FD80024CCA73A00A76F92 /* ErrorHandler.swift in Sources */,
+				B40FD80F24CCC53000A76F92 /* API.swift in Sources */,
 				B40FD80524CCA84400A76F92 /* StyleConstants.swift in Sources */,
 				B40FD7FD24CC932900A76F92 /* BusinessSearchViewModel.swift in Sources */,
 				B40FD80724CCADBF00A76F92 /* ReuseIdentifiable.swift in Sources */,
@@ -602,6 +618,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		B40FD80824CCBBCC00A76F92 /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImage.git";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 5.8.4;
+			};
+		};
 		B4D2899A24CC85E70065EF4A /* XCRemoteSwiftPackageReference "apollo-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apollographql/apollo-ios.git";
@@ -613,6 +637,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		B40FD80924CCBBCC00A76F92 /* SDWebImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B40FD80824CCBBCC00A76F92 /* XCRemoteSwiftPackageReference "SDWebImage" */;
+			productName = SDWebImage;
+		};
 		B4D2899B24CC85E70065EF4A /* ApolloCodegenLib */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B4D2899A24CC85E70065EF4A /* XCRemoteSwiftPackageReference "apollo-ios" */;

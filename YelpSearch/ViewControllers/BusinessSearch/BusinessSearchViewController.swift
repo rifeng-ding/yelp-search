@@ -9,34 +9,49 @@
 import UIKit
 import Combine
 
+private let gridSpacing = Spacing.s3
+private let paginationCellIndexOffset = 4
+private let pageSize = 20
+
 class BusinessSearchViewController: UIViewController {
-
-    private let gridSpacing = Spacing.s3
-
     @IBOutlet weak var collectionView: UICollectionView!
 
-    let viewModel = BusinessSearchViewModel(service: BusinessSearchService(pageSize: 10))
+    let viewModel = BusinessSearchViewModel(service: BusinessSearchService(pageSize: 20))
 
     private var searchResultCancellable: AnyCancellable?
+    private var searchErrorCancellable: AnyCancellable?
+    private let searchController = UISearchController(searchResultsController: nil)
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = viewModel.title
+        configureSearchController()
         configureCollectionView()
-        searchResultCancellable = viewModel.searchResults.sink(receiveCompletion: { [weak self] (completion) in
-            switch completion {
-            case .failure(let error):
-                self?.handle(error)
-            case .finished:
-                break
+        searchResultCancellable = viewModel.searchResultUpdate.sink { [weak self] (newResultRange) in
+            if newResultRange.startIndex == 0 {
+                self?.collectionView.reloadData()
+            } else {
+                var newIndexPathes = [IndexPath]()
+                for i in newResultRange {
+                    newIndexPathes.append(IndexPath(item: i, section: 0))
+                }
+                UIView.performWithoutAnimation {
+                    self?.collectionView.performBatchUpdates({
+                        self?.collectionView.insertItems(at: newIndexPathes)
+                    }, completion: nil)
+                }
             }
-        }) { [weak self] (_) in
-            self?.collectionView.reloadData()
+        }
+
+        searchErrorCancellable = viewModel.errorUpdate.sink { [weak self] (error) in
+            self?.handle(error)
         }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        viewModel.loadSearchResults()
+//        viewModel.search(for: "bagel")
     }
 
     private func configureCollectionView() {
@@ -44,6 +59,15 @@ class BusinessSearchViewController: UIViewController {
         let flowLayout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
         flowLayout.minimumLineSpacing = gridSpacing
         flowLayout.minimumInteritemSpacing = gridSpacing
+    }
+
+    private func configureSearchController() {
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search on Yelp"
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
+        definesPresentationContext = true
     }
 }
 
@@ -63,10 +87,26 @@ extension BusinessSearchViewController: UICollectionViewDataSource {
         cell.nameLabel.text = viewModel.name(for: indexPath)
         cell.infoLabel.text = viewModel.info(for: indexPath)
         cell.distanceLabel.text = viewModel.distiance(for: indexPath)
+        cell.imageView.loadImage(fromURL: viewModel.imageURL(for: indexPath))
         return cell
     }
 }
 
 extension BusinessSearchViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if viewModel.numberOfCells - indexPath.item == paginationCellIndexOffset {
+            print("loading page: reached cell")
+            viewModel.loadMoreResultsForCurrentSearchTerm()
+        }
+    }
+}
 
+extension BusinessSearchViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        if let searchTerm = searchController.searchBar.text, searchTerm.count > 0 {
+            viewModel.search(for: searchTerm)
+        } else {
+            viewModel.clearSearchResult()
+        }
+    }
 }

@@ -14,16 +14,19 @@ class BusinessSearchViewModel {
     let service: BusinessSearch
     let mockCoordinate = CLLocationCoordinate2D(latitude: 45.4990267, longitude: -73.5562752)
 
-    private(set) var searchResults = PassthroughSubject<[Business], Error>()
-    private var _businesses = [Business]() {
-        didSet {
-            searchResults.send(_businesses)
-        }
-    }
+    typealias NewResultRange = Range<Int>
+
+    private(set) var searchResultUpdate = PassthroughSubject<NewResultRange, Never>()
+    private(set) var errorUpdate = PassthroughSubject<Error, Never>()
+    private var _businesses = [Business]()
 
     private(set) var pageNumber = 0
+    private(set) var hasNextPage = true
+    private(set) var searchTerm: String?
     private var searchCancellable: AnyCancellable?
     private let distanceFormatter = MKDistanceFormatter()
+
+    let title = "Yelp Search"
 
     var numberOfCells: Int {
         return _businesses.count
@@ -33,17 +36,25 @@ class BusinessSearchViewModel {
         self.service = service
     }
 
-    func loadSearchResults() {
-        searchCancellable = service.fetchSearchResult(for: "s", pageNumber: pageNumber).sink(receiveCompletion: { [weak self] (completion) in
-            switch completion {
-            case .failure(let error):
-                self?.searchResults.send(completion: .failure(error))
-            case .finished:
-                self?.searchCancellable = nil
-            }
-        }, receiveValue: { [weak self] (businesses) in
-            self?._businesses.append(contentsOf: businesses)
-        })
+    func search(for searchTerm: String) {
+        clearSearchResult()
+        self.searchTerm = searchTerm
+        search(for: searchTerm, resetPagination: true)
+    }
+
+    func loadMoreResultsForCurrentSearchTerm() {
+        guard let searchTerm = searchTerm,
+            searchCancellable == nil,
+            hasNextPage else {
+            return
+        }
+        print("loading page: more")
+        search(for: searchTerm, resetPagination: false)
+    }
+
+    func clearSearchResult() {
+        cancelCurrentSearch()
+        _businesses = [Business]()
     }
 
     func cancelCurrentSearch() {
@@ -56,9 +67,20 @@ class BusinessSearchViewModel {
 
     func info(for indexPath: IndexPath) -> String {
         let business = _businesses[indexPath.item]
-        let rating = String(format: "%.1f", business.rating ?? 0)
-        let numberOfRating = "\(business.reviewCount ?? 0)  Reviews"
-        return "\(rating) Star(s)/ \(numberOfRating)"
+        var ratingCopy = "Not enough ratings"
+
+        if let rating = business.rating {
+            ratingCopy = String(format: "%.1f/5 stars", rating)
+        } else {
+            // when there's no rating, there's probably no price range
+            return ratingCopy
+        }
+
+        var parts = [ratingCopy]
+        if let priceRange = business.price  {
+            parts.append(priceRange)
+        }
+        return parts.joined(separator: ", ")
     }
 
     func distiance(for indexPath: IndexPath) -> String? {
@@ -67,6 +89,50 @@ class BusinessSearchViewModel {
             return nil
         }
         return distanceFormatter.string(fromDistance: distance)
+    }
+
+    func imageURL(for indexPath: IndexPath) -> String? {
+        let business = _businesses[indexPath.item]
+        guard let photoURL = business.photos?.first else {
+            return nil
+        }
+        return photoURL
+    }
+
+    private func search(for searchTerm: String, resetPagination: Bool) {
+        if resetPagination {
+            pageNumber = 0
+        }
+
+        print("loading page: \(pageNumber)")
+
+        searchCancellable?.cancel()
+        searchCancellable = service.fetchSearchResult(
+            for: searchTerm,
+            coordinate: mockCoordinate,
+            pageNumber: pageNumber,
+            sorting: .distance
+        ).sink(receiveCompletion: { [weak self] (completion) in
+            switch completion {
+            case .failure(let error):
+                self?.errorUpdate.send(error)
+            case .finished:
+                self?.pageNumber += 1
+                self?.searchCancellable = nil
+            }
+            }, receiveValue: { [weak self] (search) in
+                guard let self = self else {
+                    return
+                }
+                if let total = search?.total,
+                    let businesses = search?.business?.compactMap({ $0 }) {
+                    let currentResultCount = self._businesses.count
+                    self._businesses.append(contentsOf: businesses)
+                    self.searchResultUpdate.send(currentResultCount ..< (currentResultCount + businesses.count))
+                    self.hasNextPage = total > self._businesses.count
+                }
+                //TODO: what if unwrapping failed?!?!?!!?
+        })
     }
 }
 

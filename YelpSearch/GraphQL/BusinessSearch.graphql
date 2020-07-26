@@ -1,5 +1,5 @@
-query businessSearch {
-  search(term: "bagel", latitude: 45.4990267, longitude: -73.5562752, limit: 10, sort_by: "distance") {
+query businessSearch($term: String, $latitude: Float, $longitude: Float, $limit: Int, $offset: Int, $sortBy: String) {
+  search(term: $term, latitude: $latitude, longitude: $longitude, limit: $limit, offset: $offset, sort_by: $sortBy) {
     total
     business {
       name
