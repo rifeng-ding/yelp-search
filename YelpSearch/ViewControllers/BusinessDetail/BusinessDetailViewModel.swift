@@ -6,10 +6,10 @@
 //  Copyright © 2020 Rifeng Ding. All rights reserved.
 //
 
-import Foundation
+import UIKit
 import Combine
 
-class BusinessDetailViewModel {
+class BusinessDetailViewModel: DefaultImageLoading {
 
     private(set) var reviewsUpdate = PassthroughSubject<[Review]?, Never>()
     private(set) var errorUpdate = PassthroughSubject<Error, Never>()
@@ -21,6 +21,14 @@ class BusinessDetailViewModel {
     init(business: Business, service: ReviewService) {
         self.business = business
         self.service = service
+    }
+
+    var emptyStateMessage: String {
+        return "No reviews yet or the business is no longer available."
+    }
+
+    var shouldShowEmptyState: Bool {
+        return reviews.count == 0
     }
 
     var name: String? {
@@ -59,5 +67,24 @@ class BusinessDetailViewModel {
                     self?.reviewsUpdate.send(reviews)
             }
         )
+    }
+
+    var numberOfCells: Int {
+        return reviews.count
+    }
+
+    func userName(for indexPath: IndexPath) -> String? {
+        return reviews[indexPath.row].user?.name
+    }
+
+    func rating(for indexPath: IndexPath) -> String? {
+        guard let rating = reviews[indexPath.row].rating else {
+            return nil
+        }
+        return "\(rating) Star(s)"
+    }
+
+    func reviewContent(for indexPath: IndexPath) -> String? {
+        return reviews[indexPath.row].text
     }
 }

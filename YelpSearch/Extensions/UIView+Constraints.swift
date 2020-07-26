@@ -43,6 +43,19 @@ extension UIView {
         NSLayoutConstraint.activate(constraints)
     }
 
+    func constraintToSuperviewLayoutMergin(withInsets insets: UIEdgeInsets = .zero) {
+        guard let superview = superview else {
+            return
+        }
+        // The order in the array has to follow corresponding enum's order in ViewEdge
+        NSLayoutConstraint.activate([
+            self.leadingAnchor.constraint(equalTo: superview.layoutMarginsGuide.leadingAnchor, constant: insets.left),
+            self.trailingAnchor.constraint(equalTo: superview.layoutMarginsGuide.trailingAnchor, constant: -insets.right),
+            self.topAnchor.constraint(equalTo: superview.layoutMarginsGuide.topAnchor, constant: insets.top),
+            self.bottomAnchor.constraint(equalTo: superview.layoutMarginsGuide.bottomAnchor, constant: -insets.bottom)
+        ])
+    }
+
     func constraintToSuperviewLayoutMergin(except edge: ViewEdge, withInsets insets: UIEdgeInsets = .zero) {
         guard let superview = superview else {
             return

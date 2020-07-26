@@ -11,11 +11,16 @@ import SDWebImage
 
 extension UIImageView {
 
-    func loadImage(fromURL url: String?) {
+    func loadImage(fromURL url: String?, defaultImage: UIImage? = nil) {
         guard let rawURL = url, let url = URL(string: rawURL) else {
-            self.image = nil
+            self.image = defaultImage
             return
         }
-        sd_setImage(with: url, completed: nil)
+
+        sd_setImage(with: url) { [weak self] (image, error, _, _) in
+            if image == nil || error != nil {
+                self?.image = defaultImage
+            }
+        }
     }
 }

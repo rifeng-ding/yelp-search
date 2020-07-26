@@ -10,13 +10,13 @@ import Foundation
 import Combine
 import MapKit
 
-class BusinessSearchViewModel {
+class BusinessSearchViewModel: DefaultImageLoading {
     let service: BusinessSearch
     let mockCoordinate = CLLocationCoordinate2D(latitude: 45.4990267, longitude: -73.5562752)
 
     typealias NewResultRange = Range<Int>
 
-    private(set) var searchResultUpdate = PassthroughSubject<NewResultRange, Never>()
+    private(set) var searchResultUpdate = PassthroughSubject<NewResultRange?, Never>()
     private(set) var errorUpdate = PassthroughSubject<Error, Never>()
     private var businesses = [Business]()
 
@@ -32,11 +32,22 @@ class BusinessSearchViewModel {
         return businesses.count
     }
 
+    var emptyStateMessage: String {
+        return searchTerm != nil ? "No result matches your search." : "Enter the nearby business you want to search for."
+    }
+
+    var shouldShowEmptyState: Bool {
+        return businesses.count == 0
+    }
+
     init(service: BusinessSearch) {
         self.service = service
     }
 
     func search(for searchTerm: String) {
+        guard searchTerm != self.searchTerm else {
+            return
+        }
         clearSearchResult()
         self.searchTerm = searchTerm
         search(for: searchTerm, resetPagination: true)
@@ -55,10 +66,13 @@ class BusinessSearchViewModel {
     func clearSearchResult() {
         cancelCurrentSearch()
         businesses = [Business]()
+        searchResultUpdate.send(nil)
     }
 
     func cancelCurrentSearch() {
+        searchTerm = nil
         searchCancellable?.cancel()
+        searchCancellable = nil
     }
 
     func name(for indexPath: IndexPath) -> String? {

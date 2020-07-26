@@ -82,10 +82,19 @@
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="Fvu-xN-rBr"/>
                                 </connections>
                             </collectionView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SyK-bb-6wV">
+                                <rect key="frame" x="24" y="180" width="366" height="24"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleTitle3"/>
+                                <color key="textColor" systemColor="secondaryLabelColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
+                            <constraint firstItem="SyK-bb-6wV" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="24" id="BXB-la-Hy2"/>
+                            <constraint firstItem="SyK-bb-6wV" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="M9J-qM-Oib"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="dn5-na-8eu" secondAttribute="trailing" id="Tur-D6-TuO"/>
+                            <constraint firstItem="SyK-bb-6wV" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" constant="180" id="a3T-Ok-9lU"/>
                             <constraint firstItem="dn5-na-8eu" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="bO4-nc-Z2J"/>
                             <constraint firstItem="dn5-na-8eu" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="eMH-FF-KOw"/>
                             <constraint firstAttribute="bottom" secondItem="dn5-na-8eu" secondAttribute="bottom" id="uRr-zQ-5YR"/>
@@ -95,6 +104,7 @@
                     <navigationItem key="navigationItem" id="3UD-hX-w7i"/>
                     <connections>
                         <outlet property="collectionView" destination="dn5-na-8eu" id="IGg-hz-23M"/>
+                        <outlet property="emptyStateLabel" destination="SyK-bb-6wV" id="CaS-TC-VrX"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

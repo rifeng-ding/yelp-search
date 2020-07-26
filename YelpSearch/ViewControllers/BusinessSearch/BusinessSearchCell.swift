@@ -22,6 +22,7 @@ class BusinessSearchCell: UICollectionViewCell {
         set {
             widthConstraint.constant = newValue
             imageViewHeightConstraint.constant = newValue
+            layoutIfNeeded()
         }
 
         get {
@@ -43,15 +44,19 @@ class BusinessSearchCell: UICollectionViewCell {
         contentView.layer.cornerRadius = CornerRadius.standard
         contentView.layer.masksToBounds = true
 
-        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowColor = UIColor.separator.cgColor
         layer.shadowOffset = CGSize(width: 0, height: 1.0)
-        layer.shadowRadius = 3.0
-        layer.shadowOpacity = 0.2
+        layer.shadowRadius = 5
+        layer.shadowOpacity = 1
         layer.masksToBounds = false
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
         layer.shadowPath = UIBezierPath(roundedRect: bounds, cornerRadius: CornerRadius.standard).cgPath
+    }
+
+    override func prepareForReuse() {
+        imageView.image = nil
     }
 }
