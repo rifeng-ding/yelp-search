@@ -36,7 +36,11 @@ class BusinessSearchViewController: UIViewController {
                 for i in newResultRange {
                     newIndexPathes.append(IndexPath(item: i, section: 0))
                 }
-                self?.collectionView.insertItems(at: newIndexPathes)
+                UIView.performWithoutAnimation {
+                    self?.collectionView.performBatchUpdates({
+                        self?.collectionView.insertItems(at: newIndexPathes)
+                    }, completion: nil)
+                }
             }
         }
 
