@@ -31,7 +31,7 @@ protocol BusinessSearch {
     ) -> AnyPublisher<Search?, Error>
 }
 
-class BusinessSearchService: BusinessSearch, Service {
+class BusinessSearchService: Service, BusinessSearch {
 
     let pageSize: Int
     init(pageSize: Int) {

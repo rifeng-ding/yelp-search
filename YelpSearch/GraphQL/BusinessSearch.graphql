@@ -10,6 +10,9 @@ query businessSearch($term: String, $latitude: Float, $longitude: Float, $limit:
       rating
       price
       photos
+      location {
+        formatted_address
+      }
       coordinates {
         latitude
         longitude

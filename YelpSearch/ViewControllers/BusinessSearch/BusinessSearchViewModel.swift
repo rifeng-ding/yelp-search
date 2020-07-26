@@ -18,7 +18,7 @@ class BusinessSearchViewModel {
 
     private(set) var searchResultUpdate = PassthroughSubject<NewResultRange, Never>()
     private(set) var errorUpdate = PassthroughSubject<Error, Never>()
-    private var _businesses = [Business]()
+    private var businesses = [Business]()
 
     private(set) var pageNumber = 0
     private(set) var hasNextPage = true
@@ -29,7 +29,7 @@ class BusinessSearchViewModel {
     let title = "Yelp Search"
 
     var numberOfCells: Int {
-        return _businesses.count
+        return businesses.count
     }
 
     init(service: BusinessSearch) {
@@ -54,7 +54,7 @@ class BusinessSearchViewModel {
 
     func clearSearchResult() {
         cancelCurrentSearch()
-        _businesses = [Business]()
+        businesses = [Business]()
     }
 
     func cancelCurrentSearch() {
@@ -62,11 +62,11 @@ class BusinessSearchViewModel {
     }
 
     func name(for indexPath: IndexPath) -> String? {
-        return _businesses[indexPath.item].name
+        return businesses[indexPath.item].name
     }
 
     func info(for indexPath: IndexPath) -> String {
-        let business = _businesses[indexPath.item]
+        let business = businesses[indexPath.item]
         var ratingCopy = "Not enough ratings"
 
         if let rating = business.rating {
@@ -84,7 +84,7 @@ class BusinessSearchViewModel {
     }
 
     func distiance(for indexPath: IndexPath) -> String? {
-        let business = _businesses[indexPath.item]
+        let business = businesses[indexPath.item]
         guard let distance = business.distiance(from: mockCoordinate) else {
             return nil
         }
@@ -92,11 +92,18 @@ class BusinessSearchViewModel {
     }
 
     func imageURL(for indexPath: IndexPath) -> String? {
-        let business = _businesses[indexPath.item]
+        let business = businesses[indexPath.item]
         guard let photoURL = business.photos?.first else {
             return nil
         }
         return photoURL
+    }
+
+    func business(for indexPath: IndexPath) -> Business? {
+        guard indexPath.item < businesses.count else {
+            return nil
+        }
+        return businesses[indexPath.item]
     }
 
     private func search(for searchTerm: String, resetPagination: Bool) {
@@ -112,27 +119,28 @@ class BusinessSearchViewModel {
             coordinate: mockCoordinate,
             pageNumber: pageNumber,
             sorting: .distance
-        ).sink(receiveCompletion: { [weak self] (completion) in
-            switch completion {
-            case .failure(let error):
-                self?.errorUpdate.send(error)
-            case .finished:
-                self?.pageNumber += 1
-                self?.searchCancellable = nil
-            }
+        ).sink(
+            receiveCompletion: { [weak self] (completion) in
+                switch completion {
+                case .failure(let error):
+                    self?.errorUpdate.send(error)
+                case .finished:
+                    self?.pageNumber += 1
+                    self?.searchCancellable = nil
+                }
             }, receiveValue: { [weak self] (search) in
                 guard let self = self else {
                     return
                 }
                 if let total = search?.total,
                     let businesses = search?.business?.compactMap({ $0 }) {
-                    let currentResultCount = self._businesses.count
-                    self._businesses.append(contentsOf: businesses)
+                    let currentResultCount = self.businesses.count
+                    self.businesses.append(contentsOf: businesses)
                     self.searchResultUpdate.send(currentResultCount ..< (currentResultCount + businesses.count))
-                    self.hasNextPage = total > self._businesses.count
+                    self.hasNextPage = total > self.businesses.count
                 }
-                //TODO: what if unwrapping failed?!?!?!!?
-        })
+            }
+        )
     }
 }
 

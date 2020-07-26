@@ -16,12 +16,12 @@ enum CornerRadius {
 }
 
 enum Spacing {
-    // 4pts
+    /// 4pts
     static let s1 = BaseUnit
-    // 8pts
+    /// 8pts
     static let s2 = BaseUnit * 2
-    // 12pts
+    /// 12pts
     static let s3 = BaseUnit * 3
-    // 16pts
+    /// 16pts
     static let s4 = BaseUnit * 4
 }

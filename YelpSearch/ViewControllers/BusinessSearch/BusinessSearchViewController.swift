@@ -28,6 +28,26 @@ class BusinessSearchViewController: UIViewController {
         title = viewModel.title
         configureSearchController()
         configureCollectionView()
+        subscribeToViewModel()
+    }
+
+    private func configureCollectionView() {
+        collectionView.contentInset = UIEdgeInsets(top: gridSpacing, left: gridSpacing, bottom: gridSpacing, right: gridSpacing)
+        let flowLayout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
+        flowLayout.minimumLineSpacing = gridSpacing
+        flowLayout.minimumInteritemSpacing = gridSpacing
+    }
+
+    private func configureSearchController() {
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search on Yelp"
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
+        definesPresentationContext = true
+    }
+
+    private func subscribeToViewModel() {
         searchResultCancellable = viewModel.searchResultUpdate.sink { [weak self] (newResultRange) in
             if newResultRange.startIndex == 0 {
                 self?.collectionView.reloadData()
@@ -47,27 +67,6 @@ class BusinessSearchViewController: UIViewController {
         searchErrorCancellable = viewModel.errorUpdate.sink { [weak self] (error) in
             self?.handle(error)
         }
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-//        viewModel.search(for: "bagel")
-    }
-
-    private func configureCollectionView() {
-        collectionView.contentInset = UIEdgeInsets(top: gridSpacing, left: gridSpacing, bottom: gridSpacing, right: gridSpacing)
-        let flowLayout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
-        flowLayout.minimumLineSpacing = gridSpacing
-        flowLayout.minimumInteritemSpacing = gridSpacing
-    }
-
-    private func configureSearchController() {
-        searchController.searchResultsUpdater = self
-        searchController.obscuresBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Search on Yelp"
-        navigationItem.searchController = searchController
-        navigationItem.hidesSearchBarWhenScrolling = false
-        definesPresentationContext = true
     }
 }
 
@@ -98,6 +97,15 @@ extension BusinessSearchViewController: UICollectionViewDelegate {
             print("loading page: reached cell")
             viewModel.loadMoreResultsForCurrentSearchTerm()
         }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let business = viewModel.business(for: indexPath) else {
+            return
+        }
+        let detailViewModel = BusinessDetailViewModel(business: business, service: ReviewService())
+        let detailViewController = BusinessDetailViewController(viewModel: detailViewModel)
+        navigationController?.pushViewController(detailViewController, animated: true)
     }
 }
 
