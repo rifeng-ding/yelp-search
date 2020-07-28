@@ -10,7 +10,7 @@ import UIKit
 import Combine
 
 private let gridSpacing = Spacing.s3
-private let paginationCellIndexOffset = 6
+private let paginationCellIndexOffset = 8
 private let pageSize = 20
 
 class BusinessSearchViewController: UIViewController {
@@ -40,10 +40,29 @@ class BusinessSearchViewController: UIViewController {
     }
 
     private func configureCollectionView() {
-        collectionView.contentInset = UIEdgeInsets(top: gridSpacing, left: gridSpacing, bottom: gridSpacing, right: gridSpacing)
-        let flowLayout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
-        flowLayout.minimumLineSpacing = gridSpacing
-        flowLayout.minimumInteritemSpacing = gridSpacing
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(0.5),
+            heightDimension: .fractionalHeight(1.0)
+        )
+        let businessItem = NSCollectionLayoutItem(layoutSize: itemSize)
+        businessItem.contentInsets = NSDirectionalEdgeInsets(
+            top: gridSpacing,
+            leading: gridSpacing,
+            bottom: gridSpacing,
+            trailing: gridSpacing
+        )
+        let groupSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0),
+            heightDimension: .fractionalWidth(0.5)
+        )
+        let group = NSCollectionLayoutGroup.horizontal(
+            layoutSize: groupSize,
+            subitem: businessItem,
+            count: 2
+        )
+        let section = NSCollectionLayoutSection(group: group)
+        let layout = UICollectionViewCompositionalLayout(section: section)
+        collectionView.collectionViewLayout = layout
     }
 
     private func configureSearchController() {
@@ -66,7 +85,7 @@ class BusinessSearchViewController: UIViewController {
         }
     }
 
-    func generateDataSource(for collectionView: UICollectionView) -> BusinessSearchViewModel.DataSource {
+    private func generateDataSource(for collectionView: UICollectionView) -> BusinessSearchViewModel.DataSource {
         UICollectionViewDiffableDataSource(collectionView: collectionView) {
             [weak self] (collectionView, indexPath, business) -> UICollectionViewCell? in
             guard let self = self else {
@@ -77,8 +96,6 @@ class BusinessSearchViewController: UIViewController {
                 for: indexPath
                 ) as! BusinessSearchCell
 
-            let availableHorizentalWidth = collectionView.frame.width - gridSpacing * 3
-            cell.width = floor(availableHorizentalWidth / 2)
             cell.nameLabel.text = business.name
             cell.infoLabel.text = business.basicInforamtion
             cell.distanceLabel.text = business.formattedDistance(from: self.viewModel.userLocation)
@@ -92,13 +109,15 @@ class BusinessSearchViewController: UIViewController {
 }
 
 extension BusinessSearchViewController: UICollectionViewDelegate {
-    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        searchController.searchBar.resignFirstResponder()
+    }
+
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard viewModel.numberOfCells >= pageSize else {
             return
         }
         if viewModel.numberOfCells - indexPath.item == paginationCellIndexOffset {
-            print("loading page: reached cell \(indexPath.item)/\(viewModel.numberOfCells)")
             viewModel.loadMoreResultsForCurrentSearchTerm()
         }
     }

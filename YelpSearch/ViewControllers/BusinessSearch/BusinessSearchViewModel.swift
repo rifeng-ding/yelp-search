@@ -76,7 +76,6 @@ class BusinessSearchViewModel: DefaultImageLoading {
             hasNextPage else {
             return
         }
-        print("loading page: more")
         search(for: searchTerm, resetPagination: false)
     }
 
@@ -100,8 +99,6 @@ class BusinessSearchViewModel: DefaultImageLoading {
         if resetPagination {
             pageNumber = 0
         }
-
-        print("loading page: \(pageNumber)")
 
         searchCancellable?.cancel()
         searchCancellable = service.fetchSearchResult(
