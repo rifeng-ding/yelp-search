@@ -27,6 +27,8 @@
 		B40FD82124CDB97000A76F92 /* ProgrammaticViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40FD82024CDB97000A76F92 /* ProgrammaticViewController.swift */; };
 		B40FD82324CDBAEB00A76F92 /* ReviewService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40FD82224CDBAEB00A76F92 /* ReviewService.swift */; };
 		B40FD82524CDD06400A76F92 /* BusinessReviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40FD82424CDD06400A76F92 /* BusinessReviewCell.swift */; };
+		B423B42224CF928F002FF660 /* Business+Hashable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B423B42124CF928F002FF660 /* Business+Hashable.swift */; };
+		B423B42524CFABC1002FF660 /* LocationUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = B423B42424CFABC1002FF660 /* LocationUtility.swift */; };
 		B4C3BCE224CDFA0D0061AF87 /* DefaultImageLoading.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C3BCE124CDFA0D0061AF87 /* DefaultImageLoading.swift */; };
 		B4D2897924CC85C40065EF4A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D2897824CC85C40065EF4A /* AppDelegate.swift */; };
 		B4D2897B24CC85C40065EF4A /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D2897A24CC85C40065EF4A /* SceneDelegate.swift */; };
@@ -74,6 +76,8 @@
 		B40FD82024CDB97000A76F92 /* ProgrammaticViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgrammaticViewController.swift; sourceTree = "<group>"; };
 		B40FD82224CDBAEB00A76F92 /* ReviewService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewService.swift; sourceTree = "<group>"; };
 		B40FD82424CDD06400A76F92 /* BusinessReviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusinessReviewCell.swift; sourceTree = "<group>"; };
+		B423B42124CF928F002FF660 /* Business+Hashable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Business+Hashable.swift"; sourceTree = "<group>"; };
+		B423B42424CFABC1002FF660 /* LocationUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationUtility.swift; sourceTree = "<group>"; };
 		B4C3BCE124CDFA0D0061AF87 /* DefaultImageLoading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultImageLoading.swift; sourceTree = "<group>"; };
 		B4D2897524CC85C40065EF4A /* YelpSearch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YelpSearch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B4D2897824CC85C40065EF4A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -164,6 +168,14 @@
 			path = BusinessDetail;
 			sourceTree = "<group>";
 		};
+		B423B42324CFABB1002FF660 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				B423B42424CFABC1002FF660 /* LocationUtility.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
 		B4D2896C24CC85C40065EF4A = {
 			isa = PBXGroup;
 			children = (
@@ -196,6 +208,7 @@
 				B40FD7FE24CCA72600A76F92 /* Protocol */,
 				B40FD7F724CC89CC00A76F92 /* Service */,
 				B40FD80324CCA83700A76F92 /* Style */,
+				B423B42324CFABB1002FF660 /* Utilities */,
 				B4D289AD24CC87810065EF4A /* ViewControllers */,
 			);
 			path = YelpSearch;
@@ -235,6 +248,7 @@
 		B4D289AE24CC87C20065EF4A /* BusinessSearch */ = {
 			isa = PBXGroup;
 			children = (
+				B423B42124CF928F002FF660 /* Business+Hashable.swift */,
 				B40FD80124CCA7F600A76F92 /* BusinessSearchCell.swift */,
 				B40FD7FC24CC932900A76F92 /* BusinessSearchViewModel.swift */,
 				B4D2897C24CC85C40065EF4A /* BusinessSearchViewController.swift */,
@@ -381,8 +395,10 @@
 				B4D289AC24CC869F0065EF4A /* Network.swift in Sources */,
 				B40FD81B24CDB1E700A76F92 /* UILabel+Convenient.swift in Sources */,
 				B40FD80224CCA7F600A76F92 /* BusinessSearchCell.swift in Sources */,
+				B423B42524CFABC1002FF660 /* LocationUtility.swift in Sources */,
 				B4D2897D24CC85C40065EF4A /* BusinessSearchViewController.swift in Sources */,
 				B40FD81624CDAED900A76F92 /* BusinessDetailViewModel.swift in Sources */,
+				B423B42224CF928F002FF660 /* Business+Hashable.swift in Sources */,
 				B4C3BCE224CDFA0D0061AF87 /* DefaultImageLoading.swift in Sources */,
 				B40FD82324CDBAEB00A76F92 /* ReviewService.swift in Sources */,
 				B4D2897924CC85C40065EF4A /* AppDelegate.swift in Sources */,

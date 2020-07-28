@@ -10,23 +10,54 @@ import Foundation
 import Combine
 import MapKit
 
+private let defaultLocation = CLLocation(
+    latitude: 45.4990267,
+    longitude: -73.5562752
+)
+
+struct NoLocationPermissionError: LocalizedError {
+    var errorDescription: String? {
+        return "User denied permisson to use GPS location. A default location in Montreal will be used."
+    }
+}
+
 class BusinessSearchViewModel: DefaultImageLoading {
-    let service: BusinessSearch
-    let mockCoordinate = CLLocationCoordinate2D(latitude: 45.4990267, longitude: -73.5562752)
 
     typealias NewResultRange = Range<Int>
+    typealias DataSource = UICollectionViewDiffableDataSource<Section, Business>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Business>
 
-    private(set) var searchResultUpdate = PassthroughSubject<NewResultRange?, Never>()
-    private(set) var errorUpdate = PassthroughSubject<Error, Never>()
-    private var businesses = [Business]()
+    enum Section {
+        case main
+    }
 
+    // Dependencies
+    let service: BusinessSearch
+    let locationUtility: LocationUtility
+    let dataSource: DataSource
+
+    let shouldShowEmptyStateUpdate = PassthroughSubject<Bool, Never>()
+    let errorUpdate = PassthroughSubject<Error, Never>()
+    private var businesses = [Business]() {
+        didSet {
+            shouldShowEmptyStateUpdate.send(businesses.count == 0)
+        }
+    }
+    private var snapshot: Snapshot?
     private(set) var pageNumber = 0
     private(set) var hasNextPage = true
     private(set) var searchTerm: String?
     private var searchCancellable: AnyCancellable?
-    private let distanceFormatter = MKDistanceFormatter()
+    private var locationUpdateCancellable: AnyCancellable?
+    private var locationPermissonCancellable: AnyCancellable?
 
     let title = "Yelp Search"
+    let searchBarPlaceholder = "Search on Yelp"
+
+    private(set) var gpsLocation: CLLocation?
+    var currentLocation: CLLocation {
+        return gpsLocation ?? defaultLocation
+    }
 
     var numberOfCells: Int {
         return businesses.count
@@ -36,12 +67,36 @@ class BusinessSearchViewModel: DefaultImageLoading {
         return searchTerm != nil ? "No result matches your search." : "Enter the nearby business you want to search for."
     }
 
-    var shouldShowEmptyState: Bool {
-        return businesses.count == 0
+    init(service: BusinessSearch, locationUtility: LocationUtility, dataSource: DataSource) {
+        self.service = service
+        self.dataSource = dataSource
+        self.locationUtility = locationUtility
     }
 
-    init(service: BusinessSearch) {
-        self.service = service
+    func startUpdatinLocation() {
+        if locationUtility.hasAskedPermission {
+            updatingCurrentLocation(isPermissionGranted: locationUtility.isPermissionGranted)
+        } else {
+            locationPermissonCancellable = locationUtility.permissionRequestResult.sink {
+                [weak self] (isGranted) in
+                guard let self = self else {
+                    return
+                }
+                self.updatingCurrentLocation(isPermissionGranted: isGranted)
+            }
+            locationUtility.requestPermission()
+        }
+    }
+
+    private func updatingCurrentLocation(isPermissionGranted: Bool) {
+        if isPermissionGranted {
+            locationUpdateCancellable = locationUtility.$currentLocation.sink { [weak self] (location) in
+                self?.gpsLocation = location
+            }
+            locationUtility.startUpdatingCurrentLocation()
+        } else {
+            errorUpdate.send(NoLocationPermissionError())
+        }
     }
 
     func search(for searchTerm: String) {
@@ -59,14 +114,13 @@ class BusinessSearchViewModel: DefaultImageLoading {
             hasNextPage else {
             return
         }
-        print("loading page: more")
         search(for: searchTerm, resetPagination: false)
     }
 
     func clearSearchResult() {
         cancelCurrentSearch()
         businesses = [Business]()
-        searchResultUpdate.send(nil)
+        applySnapshot(forBusiness: [], animated: true)
     }
 
     func cancelCurrentSearch() {
@@ -75,49 +129,8 @@ class BusinessSearchViewModel: DefaultImageLoading {
         searchCancellable = nil
     }
 
-    func name(for indexPath: IndexPath) -> String? {
-        return businesses[indexPath.item].name
-    }
-
-    func info(for indexPath: IndexPath) -> String {
-        let business = businesses[indexPath.item]
-        var ratingCopy = "Not enough ratings"
-
-        if let rating = business.rating {
-            ratingCopy = String(format: "%.1f/5 stars", rating)
-        } else {
-            // when there's no rating, there's probably no price range
-            return ratingCopy
-        }
-
-        var parts = [ratingCopy]
-        if let priceRange = business.price  {
-            parts.append(priceRange)
-        }
-        return parts.joined(separator: ", ")
-    }
-
-    func distiance(for indexPath: IndexPath) -> String? {
-        let business = businesses[indexPath.item]
-        guard let distance = business.distiance(from: mockCoordinate) else {
-            return nil
-        }
-        return distanceFormatter.string(fromDistance: distance)
-    }
-
-    func imageURL(for indexPath: IndexPath) -> String? {
-        let business = businesses[indexPath.item]
-        guard let photoURL = business.photos?.first else {
-            return nil
-        }
-        return photoURL
-    }
-
     func business(for indexPath: IndexPath) -> Business? {
-        guard indexPath.item < businesses.count else {
-            return nil
-        }
-        return businesses[indexPath.item]
+        return dataSource.itemIdentifier(for: indexPath)
     }
 
     private func search(for searchTerm: String, resetPagination: Bool) {
@@ -125,12 +138,10 @@ class BusinessSearchViewModel: DefaultImageLoading {
             pageNumber = 0
         }
 
-        print("loading page: \(pageNumber)")
-
         searchCancellable?.cancel()
         searchCancellable = service.fetchSearchResult(
             for: searchTerm,
-            coordinate: mockCoordinate,
+            location: currentLocation,
             pageNumber: pageNumber,
             sorting: .distance
         ).sink(
@@ -148,27 +159,55 @@ class BusinessSearchViewModel: DefaultImageLoading {
                 }
                 if let total = search?.total,
                     let businesses = search?.business?.compactMap({ $0 }) {
-                    let currentResultCount = self.businesses.count
+                    let currentResultCount = self.dataSource.snapshot().numberOfItems
                     self.businesses.append(contentsOf: businesses)
-                    self.searchResultUpdate.send(currentResultCount ..< (currentResultCount + businesses.count))
-                    self.hasNextPage = total > self.businesses.count
+                    self.hasNextPage = total > currentResultCount
+                    self.applySnapshot(forBusiness: self.businesses, animated: true)
                 }
             }
         )
     }
+
+    func applySnapshot(forBusiness businesses: [Business], animated: Bool) {
+        var snapshot = Snapshot()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(businesses)
+        dataSource.apply(snapshot, animatingDifferences: animated)
+    }
 }
 
 extension Business {
-    func distiance(from targetCoordinates: CLLocationCoordinate2D) -> Double? {
+
+    func formattedDistance(from userLocation: CLLocation) -> String? {
         guard let rawLatitude = coordinates?.latitude,
             let rawLongitude = coordinates?.longitude else {
             return nil
         }
         let businessLocaiton = CLLocation(latitude: rawLatitude, longitude: rawLongitude)
-        let targetLocation = CLLocation(
-            latitude: targetCoordinates.latitude,
-            longitude: targetCoordinates.longitude
-        )
-        return targetLocation.distance(from: businessLocaiton)
+        return MKDistanceFormatter().string(fromDistance: userLocation.distance(from: businessLocaiton))
+    }
+
+    var basicInforamtion: String {
+        var ratingCopy = "Not enough ratings"
+
+        if let rating = rating {
+            ratingCopy = String(format: "%.1f/5 stars", rating)
+        } else {
+            // when there's no rating, there's probably no price range
+            return ratingCopy
+        }
+
+        var parts = [ratingCopy]
+        if let priceRange = price  {
+            parts.append(priceRange)
+        }
+        return parts.joined(separator: ", ")
+    }
+
+    var imageURL: String? {
+        guard let photoURL = photos?.first else {
+            return nil
+        }
+        return photoURL
     }
 }
