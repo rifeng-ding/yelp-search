@@ -78,8 +78,7 @@
                                     </collectionViewCell>
                                 </cells>
                                 <connections>
-                                    <outlet property="dataSource" destination="BYZ-38-t0r" id="07o-mP-Tfe"/>
-                                    <outlet property="delegate" destination="BYZ-38-t0r" id="Fvu-xN-rBr"/>
+                                    <outlet property="delegate" destination="BYZ-38-t0r" id="iB3-I0-knC"/>
                                 </connections>
                             </collectionView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SyK-bb-6wV">

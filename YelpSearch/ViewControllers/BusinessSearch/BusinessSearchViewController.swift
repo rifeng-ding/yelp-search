@@ -14,19 +14,26 @@ private let paginationCellIndexOffset = 6
 private let pageSize = 20
 
 class BusinessSearchViewController: UIViewController {
+
     @IBOutlet private weak var collectionView: UICollectionView!
     @IBOutlet private weak var emptyStateLabel: UILabel!
 
-    let viewModel = BusinessSearchViewModel(service: BusinessSearchService(pageSize: 20))
+    private(set) var viewModel: BusinessSearchViewModel!
 
-    private var searchResultCancellable: AnyCancellable?
+    private var emptyStateCancellable: AnyCancellable?
     private var searchErrorCancellable: AnyCancellable?
     private let searchController = UISearchController(searchResultsController: nil)
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        viewModel = BusinessSearchViewModel(
+            service: BusinessSearchService(pageSize: 20),
+            dataSource: generateDataSource(for: collectionView)
+        )
+
         title = viewModel.title
-        updateEmptyStateLabel()
+        updateEmptyStateLabel(shouldShow: true)
         configureSearchController()
         configureCollectionView()
         subscribeToViewModel()
@@ -42,64 +49,45 @@ class BusinessSearchViewController: UIViewController {
     private func configureSearchController() {
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Search on Yelp"
+        searchController.searchBar.placeholder = viewModel.searchBarPlaceholder
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
         definesPresentationContext = true
     }
 
     private func subscribeToViewModel() {
-        searchResultCancellable = viewModel.searchResultUpdate.sink { [weak self] (newResultRange) in
-            guard let self = self else {
-                return
-            }
-            guard let newResultRange = newResultRange else {
-                self.collectionView.reloadData()
-                return
-            }
-            if newResultRange.startIndex == 0 {
-                self.collectionView.reloadData()
-            } else {
-                var newIndexPathes = [IndexPath]()
-                for i in newResultRange {
-                    newIndexPathes.append(IndexPath(item: i, section: 0))
-                }
-                UIView.performWithoutAnimation {
-                    self.collectionView.performBatchUpdates({
-                        self.collectionView.insertItems(at: newIndexPathes)
-                    }, completion: nil)
-                }
-            }
-            self.updateEmptyStateLabel()
-        }
+
+        emptyStateCancellable = viewModel.shouldShowEmptyStateUpdate.sink(receiveValue: { [weak self] (shouldShowEmptyState) in
+            self?.updateEmptyStateLabel(shouldShow: shouldShowEmptyState)
+        })
 
         searchErrorCancellable = viewModel.errorUpdate.sink { [weak self] (error) in
             self?.handle(error)
         }
     }
-}
 
-extension BusinessSearchViewController: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.numberOfCells
-    }
+    func generateDataSource(for collectionView: UICollectionView) -> BusinessSearchViewModel.DataSource {
+        UICollectionViewDiffableDataSource(collectionView: collectionView) {
+            [weak self] (collectionView, indexPath, business) -> UICollectionViewCell? in
+            guard let self = self else {
+                return nil
+            }
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: BusinessSearchCell.reuseIdentifier,
+                for: indexPath
+                ) as! BusinessSearchCell
 
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: BusinessSearchCell.reuseIdentifier,
-            for: indexPath
-        ) as! BusinessSearchCell
-
-        let availableHorizentalWidth = collectionView.frame.width - gridSpacing * 3
-        cell.width = floor(availableHorizentalWidth / 2)
-        cell.nameLabel.text = viewModel.name(for: indexPath)
-        cell.infoLabel.text = viewModel.info(for: indexPath)
-        cell.distanceLabel.text = viewModel.distiance(for: indexPath)
-        cell.imageView.loadImage(
-            fromURL: viewModel.imageURL(for: indexPath),
-            defaultImage: viewModel.defaultImage
-        )
-        return cell
+            let availableHorizentalWidth = collectionView.frame.width - gridSpacing * 3
+            cell.width = floor(availableHorizentalWidth / 2)
+            cell.nameLabel.text = business.name
+            cell.infoLabel.text = business.basicInforamtion
+            cell.distanceLabel.text = business.formattedDistance(from: self.viewModel.userLocation)
+            cell.imageView.loadImage(
+                fromURL: business.imageURL,
+                defaultImage: self.viewModel.defaultImage
+            )
+            return cell
+        }
     }
 }
 
@@ -124,9 +112,9 @@ extension BusinessSearchViewController: UICollectionViewDelegate {
         navigationController?.pushViewController(detailViewController, animated: true)
     }
 
-    func updateEmptyStateLabel() {
+    func updateEmptyStateLabel(shouldShow: Bool) {
         emptyStateLabel.text = viewModel.emptyStateMessage
-        emptyStateLabel.isHidden = !viewModel.shouldShowEmptyState
+        emptyStateLabel.isHidden = !shouldShow
     }
 }
 
@@ -137,7 +125,7 @@ extension BusinessSearchViewController: UISearchResultsUpdating {
             emptyStateLabel.isHidden = true
         } else {
             viewModel.clearSearchResult()
-            updateEmptyStateLabel()
+            updateEmptyStateLabel(shouldShow: true)
         }
     }
 }
