@@ -1,4 +1,4 @@
-# yelp-seach
+# yelp-search
 A simple iOS app to play with Yelp's GraphQL API, Swift's Combine framework and iOS 13's new `UICollectionView` features.
 
 ## Architecture:
