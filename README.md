@@ -14,6 +14,14 @@ To confine the usage of `Apollo`, I create a protocol named `Service` with a met
 ## Testability:
 With MVVM and protocol-oriented programming, although I didn't implementing any unit tests due to time limitation, I still consider this project to be highly testable. Dependency injection can be done through initializer or public properties. For example, `BusinessSearchViewModel` has only one initializer, which takes 3 parameters; one of them is a `BusinessSearch` protocol type, where `BusinessSearch` defined the interface for making a search request. Thus, a "mock" type could be provided for doing unit tests for this view model.
 
+## Dependency Management:
+`Swift Package Manager` is used as the only dependency management tool for this project.
+
+Swift Package manager is my prefered dependency management tool, mainly becuase:
+1. It's natively integrated into Xcode. This could be a potential advantage for CI/CD purpose, because it basically removes an extra dependency, which is the dependency management tool itself.
+2. Xcode automatically manages when packages is compiled, how they are cached and how they are linked. This could improve the compile time (for a clean build, without any extra script, pods are built along with the app) and app launch time (for this project, packages are built into libraries, which are statically linked to the app).
+3. There are several exciting new features that are coming soon to Swift Package Manager in the Xcode 12, such as [SE-0271](https://github.com/apple/swift-evolution/blob/master/proposals/0271-package-manager-resources.md) and [SE-0272](https://github.com/apple/swift-evolution/blob/master/proposals/0272-swiftpm-binary-dependencies.md). With the community working hard to bring all those useful features to it, I think Swift Package Manager could become mainstream pretty soon.
+
 ## A Playground for iOS 13 New Features:
 In the requirement of this project, no iOS version limited is provided. I didn't ask, but made the decision to use the latest iOS release, which is iOS 13. This is because I learnt a lot of iOS 13 new features since last year's WWDC, but never have much chance to apply them in any project for various of reasons. So for this project, I really want to use some of them to: 1) demostrate my ability to learn and adopt new technologies; 2) to make this project more fun to work with (As I mentioned above, I've done several similar projects recently, and for each of them, I always try to do something different.).
 
