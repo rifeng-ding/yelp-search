@@ -203,12 +203,12 @@
 				B4D2898124CC85C50065EF4A /* Assets.xcassets */,
 				B4D2898324CC85C50065EF4A /* LaunchScreen.storyboard */,
 				B4D2898624CC85C50065EF4A /* Info.plist */,
-				B423B42324CFABB1002FF660 /* Utilities */,
 				B40FD80B24CCBC5300A76F92 /* Extensions */,
 				B4D289A324CC85F10065EF4A /* GraphQL */,
 				B40FD7FE24CCA72600A76F92 /* Protocol */,
 				B40FD7F724CC89CC00A76F92 /* Service */,
 				B40FD80324CCA83700A76F92 /* Style */,
+				B423B42324CFABB1002FF660 /* Utilities */,
 				B4D289AD24CC87810065EF4A /* ViewControllers */,
 			);
 			path = YelpSearch;

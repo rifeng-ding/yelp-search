@@ -10,42 +10,53 @@ import Foundation
 import Combine
 import MapKit
 
-class BusinessSearchViewModel: DefaultImageLoading {
-    let service: BusinessSearch
-    let mockCoordinate = CLLocationCoordinate2D(latitude: 45.4990267, longitude: -73.5562752)
+private let defaultLocation = CLLocation(
+    latitude: 45.4990267,
+    longitude: -73.5562752
+)
 
-    enum Section {
-        case main
+struct NoLocationPermissionError: LocalizedError {
+    var errorDescription: String? {
+        return "User denied permisson to use GPS location. A default location in Montreal will be used."
     }
+}
+
+class BusinessSearchViewModel: DefaultImageLoading {
 
     typealias NewResultRange = Range<Int>
     typealias DataSource = UICollectionViewDiffableDataSource<Section, Business>
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Business>
 
-    private(set) var shouldShowEmptyStateUpdate = PassthroughSubject<Bool, Never>()
-    private(set) var errorUpdate = PassthroughSubject<Error, Never>()
+    enum Section {
+        case main
+    }
+
+    // Dependencies
+    let service: BusinessSearch
+    let locationUtility: LocationUtility
+    let dataSource: DataSource
+
+    let shouldShowEmptyStateUpdate = PassthroughSubject<Bool, Never>()
+    let errorUpdate = PassthroughSubject<Error, Never>()
     private var businesses = [Business]() {
         didSet {
             shouldShowEmptyStateUpdate.send(businesses.count == 0)
         }
     }
-    private var dataSource: DataSource
     private var snapshot: Snapshot?
-
-    
     private(set) var pageNumber = 0
     private(set) var hasNextPage = true
     private(set) var searchTerm: String?
     private var searchCancellable: AnyCancellable?
+    private var locationUpdateCancellable: AnyCancellable?
+    private var locationPermissonCancellable: AnyCancellable?
 
     let title = "Yelp Search"
     let searchBarPlaceholder = "Search on Yelp"
 
-    var userLocation: CLLocation {
-        return CLLocation(
-            latitude: mockCoordinate.latitude,
-            longitude: mockCoordinate.longitude
-        )
+    private(set) var gpsLocation: CLLocation?
+    var currentLocation: CLLocation {
+        return gpsLocation ?? defaultLocation
     }
 
     var numberOfCells: Int {
@@ -56,9 +67,36 @@ class BusinessSearchViewModel: DefaultImageLoading {
         return searchTerm != nil ? "No result matches your search." : "Enter the nearby business you want to search for."
     }
 
-    init(service: BusinessSearch, dataSource: DataSource) {
+    init(service: BusinessSearch, locationUtility: LocationUtility, dataSource: DataSource) {
         self.service = service
         self.dataSource = dataSource
+        self.locationUtility = locationUtility
+    }
+
+    func startUpdatinLocation() {
+        if locationUtility.hasAskedPermission {
+            updatingCurrentLocation(isPermissionGranted: locationUtility.isPermissionGranted)
+        } else {
+            locationPermissonCancellable = locationUtility.permissionRequestResult.sink {
+                [weak self] (isGranted) in
+                guard let self = self else {
+                    return
+                }
+                self.updatingCurrentLocation(isPermissionGranted: isGranted)
+            }
+            locationUtility.requestPermission()
+        }
+    }
+
+    private func updatingCurrentLocation(isPermissionGranted: Bool) {
+        if isPermissionGranted {
+            locationUpdateCancellable = locationUtility.$currentLocation.sink { [weak self] (location) in
+                self?.gpsLocation = location
+            }
+            locationUtility.startUpdatingCurrentLocation()
+        } else {
+            errorUpdate.send(NoLocationPermissionError())
+        }
     }
 
     func search(for searchTerm: String) {
@@ -103,7 +141,7 @@ class BusinessSearchViewModel: DefaultImageLoading {
         searchCancellable?.cancel()
         searchCancellable = service.fetchSearchResult(
             for: searchTerm,
-            coordinate: mockCoordinate,
+            location: currentLocation,
             pageNumber: pageNumber,
             sorting: .distance
         ).sink(

@@ -25,7 +25,7 @@ protocol BusinessSearch {
     var pageSize: Int { get }
     func fetchSearchResult(
         for searchTerm: String,
-        coordinate: CLLocationCoordinate2D,
+        location: CLLocation,
         pageNumber: Int,
         sorting: BusinessSearchSorting
     ) -> AnyPublisher<Search?, Error>
@@ -42,15 +42,15 @@ class BusinessSearchService: Service, BusinessSearch {
 
     func fetchSearchResult(
         for searchTerm: String,
-        coordinate: CLLocationCoordinate2D,
+        location: CLLocation,
         pageNumber: Int,
         sorting: BusinessSearchSorting
     ) -> AnyPublisher<Search?, Error> {
         let offset = pageNumber * pageSize
         let query = BusinessSearchQuery(
             term: searchTerm,
-            latitude: coordinate.latitude,
-            longitude: coordinate.longitude,
+            latitude: location.coordinate.latitude,
+            longitude: location.coordinate.longitude,
             limit: pageSize,
             offset: offset, sortBy:
             sorting.rawValue

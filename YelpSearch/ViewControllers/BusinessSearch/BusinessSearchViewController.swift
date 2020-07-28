@@ -22,6 +22,7 @@ class BusinessSearchViewController: UIViewController {
 
     private var emptyStateCancellable: AnyCancellable?
     private var searchErrorCancellable: AnyCancellable?
+    private var isFirstAppear: Bool = true
     private let searchController = UISearchController(searchResultsController: nil)
 
     override func viewDidLoad() {
@@ -29,6 +30,7 @@ class BusinessSearchViewController: UIViewController {
 
         viewModel = BusinessSearchViewModel(
             service: BusinessSearchService(pageSize: 20),
+            locationUtility: LocationUtility.shared,
             dataSource: generateDataSource(for: collectionView)
         )
 
@@ -37,6 +39,14 @@ class BusinessSearchViewController: UIViewController {
         configureSearchController()
         configureCollectionView()
         subscribeToViewModel()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if isFirstAppear {
+            viewModel.startUpdatinLocation()
+            isFirstAppear = false
+        }
     }
 
     private func configureCollectionView() {
@@ -98,7 +108,7 @@ class BusinessSearchViewController: UIViewController {
 
             cell.nameLabel.text = business.name
             cell.infoLabel.text = business.basicInforamtion
-            cell.distanceLabel.text = business.formattedDistance(from: self.viewModel.userLocation)
+            cell.distanceLabel.text = business.formattedDistance(from: self.viewModel.currentLocation)
             cell.imageView.loadImage(
                 fromURL: business.imageURL,
                 defaultImage: self.viewModel.defaultImage
