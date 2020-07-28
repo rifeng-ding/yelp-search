@@ -19,11 +19,11 @@ In the requirement of this project, no iOS version limited is provided. I didn't
 
 The iOS 13 new feature I used in this project includes:
 * `Combine` framework: for reactive programming, which is widely used in the entire app. Basically, there's no "completion" closure being used in this app. Every asynchronous method uses `Combine`.
-* `UICollectionViewCompositionalLayout`: for layout cells for search result. Because the usage of this, plus the cell has self-sufficient auto-layout constraints , the search result collection view support any devices size in any orientation: the size of the cell will be dynamically determined at runtime.
+* `UICollectionViewCompositionalLayout`: for layout cells for search result. Because the usage of this, plus the cell has self-sufficient auto-layout constraints , the search result collection view support **any devices size in any orientation**: the size of the cell will be dynamically determined at runtime.
 * `UICollectionViewDiffableDataSource`: for providing the data source for the collection view used by the search result. Comparing to the old `UICollectionViewDataSource` approach, this new way reduces quite some boilerplate code, and makes updating the collection view less error-prone.
 * `Dark Mode`: the app also support dark mode, because I only used `semantic` colors instead of fixed color.
 
-## Known Issues:
+## Other Assumptions/Decisions:
 * Sorting for search result: the requirement asks for sorting the search result by name. However, Yelp's graphQL only support 4 kind of sorting, namely: `best_match`, `rating`, `review_count` and `distance`. So for this project, I used distance to sort the results. When the app is launched for the 1st time, it will ask permission to use the GPS location. If location permission is not granted, then for simplicity, a default coordinate near Montreal will be used.
 * More about sorting the result: although `distance` is specified as the sorting method when making the search request, Yelp's API doesn't guarantee the order. According to its API documentation: "note that specifying the sort_by is a suggestion (not strictly enforced) to Yelp's search, which considers multiple input parameters to return the most relevant results."
 * Showing reviews: the requirement also asks for "showing the latest review". Yelp's graphQL only provides a "snippet" of the reviews, which as far as I see contains up to 3 relatively recent reviews. For this project, I just displayed them all.
